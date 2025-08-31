@@ -147,7 +147,7 @@ function App() {
               <div key={product.id} className="product-card">
                 <img src={product.image} alt={product.name} />
                 <p><strong>{product.name}</strong></p>
-                <p>Price: ₹{product.price}</p>
+                <p>Price: {product.price}</p>
                 <p>Similarity Score: {product.score}</p>
               </div>
             ))}
