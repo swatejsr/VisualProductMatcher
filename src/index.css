@@ -1,3 +1,4 @@
+/* Center the main container and limit width */
 .container {
   max-width: 1000px;
   margin: 0 auto;
@@ -6,39 +7,43 @@
   text-align: center;
 }
 
+/* Styling for the upload box */
 .upload-box {
-  margin-bottom: 20px;
   padding: 15px;
+  margin-bottom: 20px;
   border: 1px solid #ddd;
   border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* File and URL input fields */
 .upload-box input[type="file"],
 .upload-box input[type="text"] {
-  margin: 10px 0;
-  padding: 8px;
   width: 80%;
+  padding: 8px;
+  margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
+/* Buttons inside upload box */
 .upload-box button {
   padding: 10px 20px;
   margin-top: 10px;
   border: none;
+  border-radius: 5px;
   background-color: #007bff;
   color: white;
-  border-radius: 5px;
   cursor: pointer;
 }
 
+/* Disabled button style */
 .upload-box button:disabled {
   background-color: #999;
   cursor: not-allowed;
 }
 
-/* Preview box */
+/* Preview image styling */
 .preview img {
   max-width: 200px;
   max-height: 200px;
@@ -47,7 +52,7 @@
   object-fit: contain;
 }
 
-/* Grid layout for results */
+/* Results displayed as grid */
 .results {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -55,21 +60,23 @@
   margin-top: 20px;
 }
 
+/* Individual product card */
 .product-card {
   position: relative;
-  background: #fff;
+  background-color: #fff;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Lift effect on hover */
 .product-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Product image */
+/* Product image inside card */
 .product-card img {
   width: 100%;
   height: 180px;
@@ -77,7 +84,7 @@
   display: block;
 }
 
-/* Product details */
+/* Info below image */
 .product-info {
   padding: 10px;
   text-align: center;
@@ -93,10 +100,10 @@
 .product-price {
   font-size: 15px;
   font-weight: bold;
-  color: #28a745; /* Amazon/Flipkart style green */
+  color: #28a745; /* green like Amazon/Flipkart */
 }
 
-/* Media query for smaller screens */
+/* Make grid single column on small screens */
 @media (max-width: 480px) {
   .results {
     grid-template-columns: 1fr;

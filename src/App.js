@@ -3,6 +3,7 @@ import "./index.css";
 import products from "./products.json";
 
 function App() {
+  // State for uploaded image, previews, URL input, search results, loading, and search status
   const [imageFile, setImageFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
@@ -11,70 +12,71 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  // Handle file upload
+  // Handle image selection from user device
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      setFilePreview(URL.createObjectURL(file));
-      setResults([]);
-      setSearched(false);
-    }
+    if (!file) return;
+
+    setImageFile(file);
+    setFilePreview(URL.createObjectURL(file));
+    setResults([]); // clear previous results
+    setSearched(false); // reset search status
   };
 
-  // Extract keywords from filename
-  const extractKeywords = (str) => {
-    return str
-      .split(".")[0]
+  // Helper: extract keywords from filename to match tags
+  const extractKeywords = (filename) => {
+    return filename
+      .split(".")[0] // remove file extension
       .toLowerCase()
-      .split(/[^a-z0-9]+|_+/)
-      .flatMap((word) => word.split(/(?=[A-Z])/))
-      .filter(Boolean);
+      .split(/[^a-z0-9]+|_+/) // split on non-alphanumeric or underscores
+      .flatMap((word) => word.split(/(?=[A-Z])/)) // split camelCase words
+      .filter(Boolean); // remove empty strings
   };
 
-  // Search function with similarity score
+  // Main search function: calculates similarity score and sorts by it
   const searchProducts = (keywords) => {
     const filtered = products
       .map((product) => {
+        // Count how many keywords match product tags
         const matchCount = product.tags.filter((tag) =>
           keywords.some((word) => tag.toLowerCase().includes(word))
         ).length;
-        return { ...product, score: matchCount };
+
+        return { ...product, score: matchCount }; // attach similarity score
       })
-      .filter((p) => p.score > 0)
-      .sort((a, b) => b.score - a.score); // highest similarity first
+      .filter((p) => p.score > 0) // only keep products with at least 1 match
+      .sort((a, b) => b.score - a.score); // sort descending by score
 
     return filtered;
   };
 
-  // Search based on uploaded file
+  // Trigger search for uploaded image
   const handleFileSearch = () => {
     if (!imageFile) return alert("Please upload an image first!");
+
     setLoading(true);
-
     const keywords = extractKeywords(imageFile.name);
-    const filtered = searchProducts(keywords);
+    const filteredResults = searchProducts(keywords);
 
-    setResults(filtered);
+    setResults(filteredResults);
     setLoading(false);
     setSearched(true);
   };
 
-  // Search based on URL input
+  // Trigger search for URL input
   const handleUrlSubmit = (e) => {
     e.preventDefault();
     if (!imageUrl.trim()) return alert("Please enter a URL!");
+
     setUrlPreview(imageUrl);
     setResults([]);
     setLoading(true);
 
-    const parts = imageUrl.split("/");
-    const filename = parts[parts.length - 1];
+    const filename = imageUrl.split("/").pop(); // get filename from URL
     const keywords = extractKeywords(filename);
+    const filteredResults = searchProducts(keywords);
 
-    const filtered = searchProducts(keywords);
-
-    setResults(filtered);
+    setResults(filteredResults);
     setLoading(false);
     setSearched(true);
   };
@@ -83,9 +85,9 @@ function App() {
     <div className="container">
       <h1>Visual Product Matcher</h1>
 
-      {/* Upload + URL Section */}
-      <div className="upload-box" style={{ marginBottom: "0" }}>
-        {/* File Upload */}
+      {/* Upload and URL input section */}
+      <div className="upload-box">
+        {/* Upload from device */}
         <div>
           <p>Upload a product image</p>
           <input type="file" accept="image/*" onChange={handleImageUpload} />
@@ -93,21 +95,18 @@ function App() {
             <div style={{ marginTop: "10px" }}>
               <img
                 src={filePreview}
-                alt="Uploaded File Preview"
+                alt="Preview of uploaded file"
                 style={{ maxWidth: "200px", height: "auto" }}
               />
               <br />
-              <button
-                onClick={handleFileSearch}
-                style={{ marginTop: "10px", padding: "5px 10px" }}
-              >
+              <button onClick={handleFileSearch} style={{ marginTop: "10px", padding: "5px 10px" }}>
                 Search
               </button>
             </div>
           )}
         </div>
 
-        {/* URL Input */}
+        {/* URL input */}
         <div style={{ marginTop: "10px" }}>
           <p>Or enter an image URL</p>
           <form onSubmit={handleUrlSubmit}>
@@ -118,10 +117,7 @@ function App() {
               onChange={(e) => setImageUrl(e.target.value)}
               style={{ width: "70%", padding: "5px" }}
             />
-            <button
-              type="submit"
-              style={{ padding: "5px 10px", marginLeft: "5px" }}
-            >
+            <button type="submit" style={{ padding: "5px 10px", marginLeft: "5px" }}>
               Search
             </button>
           </form>
@@ -129,7 +125,7 @@ function App() {
             <div style={{ marginTop: "10px" }}>
               <img
                 src={urlPreview}
-                alt="URL Preview"
+                alt="Preview of URL"
                 style={{ maxWidth: "200px", height: "auto" }}
               />
             </div>
@@ -137,7 +133,7 @@ function App() {
         </div>
       </div>
 
-      {/* Results */}
+      {/* Display search results */}
       {loading && <p>Searching...</p>}
       {results.length > 0 && (
         <div>
@@ -154,12 +150,8 @@ function App() {
           </div>
         </div>
       )}
-      {!loading && searched && results.length === 0 && (
-        <p>No matching products found.</p>
-      )}
-      {!loading && !searched && (
-        <p>No results yet. Upload or paste URL to search.</p>
-      )}
+      {!loading && searched && results.length === 0 && <p>No matching products found.</p>}
+      {!loading && !searched && <p>No results yet. Upload an image or paste a URL to start searching.</p>}
     </div>
   );
 }
